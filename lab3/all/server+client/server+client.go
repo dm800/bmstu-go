@@ -1,17 +1,22 @@
 package main
 
 import (
+	"context"
 	"encoding/json"
 	"flag"
 	"fmt"
 	"net"
+	"net/http"
 	"os"
 	"strings"
+	"time"
 
 	"example.com/all/proto"
 
 	log "github.com/mgutz/logxi/v1"
 	"github.com/skorobogatov/input"
+
+	"github.com/coder/websocket"
 )
 
 var addrStr string
@@ -169,29 +174,37 @@ func main_cycle(listener net.TCPListener) {
 	}
 }
 
+func HomeRouterHandler(w http.ResponseWriter, r *http.Request) {
+	c, err := websocket.Accept(w, r, nil)
+	if err != nil {
+		fmt.Println(err)
+	}
+	ctx, _ := context.WithTimeout(context.Background(), time.Second*10)
+	wr, _ := c.Writer(ctx, websocket.MessageType(websocket.MessageText))
+	for {
+		wr.Write([]byte(msg))
+	}
+}
+
+func runsocket() {
+	http.HandleFunc("/", HomeRouterHandler)           // установим роутер
+	err := http.ListenAndServe("localhost:9457", nil) // задаем слушать порт
+	if err != nil {
+		log.Fatal("ListenAndServe: ", err)
+	}
+}
+
 func main() {
+	go runsocket()
 	fl := true
 	msg = " "
-	flag.StringVar(&addrStr, "addr", "127.0.0.1:8123", "specify ip address and port")
+	flag.StringVar(&addrStr, "addr", "127.0.0.1:9456", "specify ip address and port")
 	flag.Parse()
 	file, _ := os.Open("config.txt")
 	data := make([]byte, 128)
 	n, _ := file.Read(data)
 	str := string(data[:n])
 	ips := strings.Split(str, "\n")
-	/*for _, ip := range ips {
-		fmt.Printf("ip: %s\n", ip)
-		if addrStr == ip {
-			continue
-		}
-		if addr, err := net.ResolveTCPAddr("tcp", ip); err != nil {
-			fmt.Printf("error: %v\n", err)
-		} else if conn, err := net.DialTCP("tcp", nil, addr); err != nil {
-			fmt.Printf("error: %v\n", err)
-		} else {
-			go interact(conn)
-		}
-	}*/
 	// Разбор адреса, строковое представление которого находится в переменной addrStr.
 	// server part
 	if addr, err := net.ResolveTCPAddr("tcp", addrStr); err != nil {
@@ -232,10 +245,11 @@ func main() {
 			} else if conn, err := net.DialTCP("tcp", nil, addr); err != nil {
 				log.Info(ip, " is not available")
 			} else {
-				switch command {
-				case "quit":
+				if command == "quit" {
 					interact(conn, "quit")
 					fl = false
+				}
+				switch command {
 				case "get":
 					interact(conn, "get")
 					fmt.Printf("Your: %s \n", msg)

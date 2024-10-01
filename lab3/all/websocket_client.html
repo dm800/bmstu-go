@@ -1,0 +1,58 @@
+<html>
+<head>
+<title>Летучка</title>
+<link rel="stylesheet" href="style.css" type="text/css"/>
+<meta charset="utf8">
+<script>
+
+let socket1 = new WebSocket("ws://localhost:9457");
+/*let socket2 = new WebSocket("ws://185.102.139.161:9457");
+let socket3 = new WebSocket("ws://185.102.139.168:9457");
+let socket4 = new WebSocket("ws://185.102.139.169:9457");*/
+
+socket1.onmessage = function(event) {
+  //alert(`[message] Данные получены с сервера: ${event.data}`);
+  document.getElementById("s1").innerHTML = event.data; 
+};
+
+/*socket2.onmessage = function(event) {
+  //alert(`[message] Данные получены с сервера: ${event.data}`);
+  document.getElementById("s2").innerHTML = event.data; 
+};
+
+socket3.onmessage = function(event) {
+  //alert(`[message] Данные получены с сервера: ${event.data}`);
+  document.getElementById("s3").innerHTML = event.data; 
+};
+
+socket4.onmessage = function(event) {
+  //alert(`[message] Данные получены с сервера: ${event.data}`);
+  document.getElementById("s4").innerHTML = event.data; 
+};*/
+
+
+socket1.onerror = function(error) {
+  alert(`[error] ${error.message}`);
+};
+
+/*socket2.onerror = function(error) {
+  alert(`[error] ${error.message}`);
+};
+
+socket3.onerror = function(error) {
+  alert(`[error] ${error.message}`);
+};
+
+socket4.onerror = function(error) {
+  alert(`[error] ${error.message}`);
+};*/
+
+</script>
+</head>
+<body>
+<div id="s1">Limonov</div><br>
+<div id="s2">Limonov</div><br>
+<div id="s3">Limonov</div><br>
+<div id="s4">Limonov</div><br>
+</body>
+</html>
