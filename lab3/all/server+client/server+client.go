@@ -214,7 +214,7 @@ func msgsend() {
 func runsocket() {
 	http.HandleFunc("/", HomeRouterHandler) // установим роутер
 	sport, _ := strconv.Atoi(port)
-	log.
+	log.Info("Startig listening ws at", addrStr+":"+strconv.Itoa(sport+1))
 	err := http.ListenAndServe(addrStr+":"+strconv.Itoa(sport+1), nil) // задаем слушать порт
 	if err != nil {
 		log.Fatal("ListenAndServe: ", err)
@@ -249,7 +249,8 @@ func hhandler() {
 }
 
 //9456 - LISTENING PORT FOR P2P
-//9457 - LISTENING PORT FOR
+//9457 - LISTENING PORT FOR WS
+//9455 - LISTENING PORT FOR POST
 
 func main() {
 	c = nil
@@ -283,6 +284,7 @@ func main() {
 	for fl {
 		// Чтение команды из стандартного потока ввода
 		command := input.Gets()
+		log.Info("executing", command)
 
 		if command == "set" {
 			fmt.Printf("type your text: ")
@@ -290,6 +292,10 @@ func main() {
 			fmt.Printf("your text: %s\n", msg)
 			msgsend()
 			continue
+		}
+
+		if command == "get" {
+			fmt.Printf("Your: %s \n", msg)
 		}
 
 		for _, ip := range ips {
@@ -300,7 +306,7 @@ func main() {
 			if addrStr+":"+port == ip {
 				continue
 			}
-			fmt.Printf("ip %s:", ip)
+			fmt.Printf("ip %s: ", ip)
 			if addr, err := net.ResolveTCPAddr("tcp", ip); err != nil {
 				log.Error("error: ", err)
 			} else if conn, err := net.DialTCP("tcp", nil, addr); err != nil {
@@ -313,7 +319,6 @@ func main() {
 				switch command {
 				case "get":
 					interact(conn, "get")
-					fmt.Printf("Your: %s \n", msg)
 				default:
 					fmt.Printf("error: unknown command\n")
 					continue
