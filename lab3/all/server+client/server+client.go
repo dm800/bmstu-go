@@ -5,9 +5,11 @@ import (
 	"encoding/json"
 	"flag"
 	"fmt"
+	"io"
 	"net"
 	"net/http"
 	"os"
+	"strconv"
 	"strings"
 	"time"
 
@@ -20,7 +22,13 @@ import (
 )
 
 var addrStr string
+var port string
 var msg string
+var c *websocket.Conn
+
+type Setter struct {
+	Tkey string `json:"tkey"`
+}
 
 // Client - состояние клиента.
 type Client struct {
@@ -175,30 +183,82 @@ func main_cycle(listener net.TCPListener) {
 }
 
 func HomeRouterHandler(w http.ResponseWriter, r *http.Request) {
-	c, err := websocket.Accept(w, r, nil)
+	log.Info("went into handler")
+	var err error
+	c, err = websocket.Accept(w, r, &websocket.AcceptOptions{
+		InsecureSkipVerify: true,
+	})
 	if err != nil {
 		fmt.Println(err)
 	}
+	msgsend()
+}
+
+func msgsend() {
 	ctx, _ := context.WithTimeout(context.Background(), time.Second*10)
-	wr, _ := c.Writer(ctx, websocket.MessageType(websocket.MessageText))
-	for {
-		wr.Write([]byte(msg))
+	if c == nil {
+		log.Info("there is no websocket connection")
+		return
 	}
+	wr, err := c.Writer(ctx, websocket.MessageType(websocket.MessageText))
+	if err != nil {
+		log.Error("sending to websocket err:", err)
+		return
+	}
+	log.Info("trying to write msg")
+	wr.Write([]byte(msg))
+	wr.Close()
+	log.Info("i believe that we sent msg")
 }
 
 func runsocket() {
-	http.HandleFunc("/", HomeRouterHandler)           // установим роутер
-	err := http.ListenAndServe("localhost:9457", nil) // задаем слушать порт
+	http.HandleFunc("/", HomeRouterHandler) // установим роутер
+	sport, _ := strconv.Atoi(port)
+	log.
+	err := http.ListenAndServe(addrStr+":"+strconv.Itoa(sport+1), nil) // задаем слушать порт
 	if err != nil {
 		log.Fatal("ListenAndServe: ", err)
 	}
 }
 
+func hhelper(w http.ResponseWriter, r *http.Request) {
+	r.Header.Add("Access-Control-Allow-Origin", "*")
+	log.Info("went into hhandler")
+	if r.Method == "POST" {
+		body, _ := io.ReadAll(r.Body)
+		log.Info("unparsed", string(body))
+		var ans Setter
+		err := json.Unmarshal(body, &ans)
+		if err != nil {
+			log.Error("error", err)
+		}
+		log.Info("parsed ", ans.Tkey)
+		msg = ans.Tkey
+		log.Info("set text to ", msg)
+	}
+	msgsend()
+}
+
+func hhandler() {
+	http.HandleFunc("/h", hhelper) // установим роутер
+	sport, _ := strconv.Atoi(port)
+	err := http.ListenAndServe(addrStr+":"+strconv.Itoa(sport-1), nil) // задаем слушать порт
+	if err != nil {
+		log.Fatal("ListenAndServe: ", err)
+	}
+}
+
+//9456 - LISTENING PORT FOR P2P
+//9457 - LISTENING PORT FOR
+
 func main() {
+	c = nil
 	go runsocket()
+	go hhandler()
 	fl := true
 	msg = " "
-	flag.StringVar(&addrStr, "addr", "127.0.0.1:9456", "specify ip address and port")
+	flag.StringVar(&addrStr, "addr", "192.168.31.116", "ip address")
+	flag.StringVar(&port, "p", "9456", "port")
 	flag.Parse()
 	file, _ := os.Open("config.txt")
 	data := make([]byte, 128)
@@ -207,8 +267,8 @@ func main() {
 	ips := strings.Split(str, "\n")
 	// Разбор адреса, строковое представление которого находится в переменной addrStr.
 	// server part
-	if addr, err := net.ResolveTCPAddr("tcp", addrStr); err != nil {
-		log.Error("address resolution failed", "address", addrStr)
+	if addr, err := net.ResolveTCPAddr("tcp", addrStr+":"+port); err != nil {
+		log.Error("address resolution failed", "address", addrStr+":"+port)
 	} else {
 		log.Info("resolved TCP address", "address", addr.String())
 
@@ -228,6 +288,7 @@ func main() {
 			fmt.Printf("type your text: ")
 			msg = input.Gets()
 			fmt.Printf("your text: %s\n", msg)
+			msgsend()
 			continue
 		}
 
@@ -236,7 +297,7 @@ func main() {
 				break
 			}
 			ip = strings.TrimSpace(ip)
-			if addrStr == ip {
+			if addrStr+":"+port == ip {
 				continue
 			}
 			fmt.Printf("ip %s:", ip)

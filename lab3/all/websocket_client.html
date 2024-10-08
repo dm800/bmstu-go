@@ -1,21 +1,20 @@
 <html>
 <head>
 <title>Летучка</title>
-<link rel="stylesheet" href="style.css" type="text/css"/>
 <meta charset="utf8">
 <script>
 
-let socket1 = new WebSocket("ws://localhost:9457");
-/*let socket2 = new WebSocket("ws://185.102.139.161:9457");
+let socket1 = new WebSocket("ws://46.138.248.69:9457");
+let socket2 = new WebSocket("ws://46.138.248.69:9461");
 let socket3 = new WebSocket("ws://185.102.139.168:9457");
-let socket4 = new WebSocket("ws://185.102.139.169:9457");*/
+let socket4 = new WebSocket("ws://185.102.139.169:9457");
 
 socket1.onmessage = function(event) {
   //alert(`[message] Данные получены с сервера: ${event.data}`);
   document.getElementById("s1").innerHTML = event.data; 
 };
 
-/*socket2.onmessage = function(event) {
+socket2.onmessage = function(event) {
   //alert(`[message] Данные получены с сервера: ${event.data}`);
   document.getElementById("s2").innerHTML = event.data; 
 };
@@ -28,24 +27,24 @@ socket3.onmessage = function(event) {
 socket4.onmessage = function(event) {
   //alert(`[message] Данные получены с сервера: ${event.data}`);
   document.getElementById("s4").innerHTML = event.data; 
-};*/
+};
 
 
 socket1.onerror = function(error) {
-  alert(`[error] ${error.message}`);
+  document.getElementById("s1").innerHTML = "disconnected";
 };
 
-/*socket2.onerror = function(error) {
-  alert(`[error] ${error.message}`);
+socket2.onerror = function(error) {
+  document.getElementById("s2").innerHTML = "disconnected";
 };
 
 socket3.onerror = function(error) {
-  alert(`[error] ${error.message}`);
+  document.getElementById("s3").innerHTML = "disconnected";
 };
 
 socket4.onerror = function(error) {
-  alert(`[error] ${error.message}`);
-};*/
+  document.getElementById("s4").innerHTML = "disconnected";
+};
 
 </script>
 </head>
@@ -54,5 +53,19 @@ socket4.onerror = function(error) {
 <div id="s2">Limonov</div><br>
 <div id="s3">Limonov</div><br>
 <div id="s4">Limonov</div><br>
+<input name="usersText" id="usersText" placeholder="Type text for 1st peer">
+<button type="button" id="post-btn" onclick="fetching()">Send</button>
+<script>
+  function fetching() {
+    let text = document.getElementsByName("usersText")[0].value
+    let data = {
+      tkey: text
+    }
+    fetch("http://46.138.248.69:9457", {
+      method: "POST",
+      body: JSON.stringify(data)
+    })
+  }
+</script>
 </body>
 </html>
