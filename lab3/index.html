@@ -1,0 +1,225 @@
+<html>
+<head>
+    <title>Летучка</title>
+    <link rel="stylesheet" type="text/css"/>
+    <meta charset="utf8">
+    <script>
+
+        let socket = new WebSocket("ws://127.0.0.1:9000");
+
+        socket.onopen = function(e) {
+            //alert("[open] Соединение установлено");
+            //alert("Отправляем данные на сервер");
+        };
+
+        socket.onmessage = function(event) {
+            //alert(`[message] Данные получены с сервера: ${event.data}`);
+            document.getElementById("id").innerHTML = event.data;
+
+
+        };
+
+        socket.onclose = function(event) {
+            if (event.wasClean) {
+                //alert(`[close] Соединение закрыто чисто, код=${event.code} причина=${event.reason}`);
+            } else {
+                // например, сервер убил процесс или сеть недоступна
+                // обычно в этом случае event.code 1006
+                //alert('[close] Соединение прервано');
+            }
+        };
+
+        socket.onerror = function(error) {
+            alert(`[error] ${error.message}`);
+        };
+
+    </script>
+</head>
+<body>
+<div id="id">data</div>
+</body>
+</html>ave to pay for it).
+It was originally created to allow scientists and students
+to visualize mathematical functions and data interactively, but has grown to support many 
+non-interactive uses such as web scripting.
+It is also used as a plotting engine by third-party applications like Octave.
+Gnuplot has been supported and under active development since 1986.
+</p>
+
+
+<p>
+<h4>Gnuplot supports many different types of 2D and 3D plots</h4>
+<div class="indent">
+    Here is a <a href="http://gnuplot.sourceforge.net/demo">Gallery of demos</a>.
+</div>
+
+<h4>Gnuplot supports many different types of output</h4>
+<div class="indent">
+  <table border=0 cellpadding=0 valign="top">
+  <tr>
+      <td>interactive screen display:</td>
+      <td width=5%></td>
+      <td>cross-platform (Qt, wxWidgets, x11) or system-specific (MS Windows, OS/2)</td>
+  </tr>
+  <tr>
+      <td>direct output to file:</td>
+      <td></td>
+      <td>postscript (including eps), pdf, png, gif, jpeg, LaTeX, metafont, emf, svg, ...</td>
+  </tr>
+  <tr>
+      <td>mouseable web display formats:</td>
+      <td></td>
+      <td>HTML5, svg</td>
+  </tr>
+  </table>
+</div>
+</p>
+
+<hr>
+
+<table width="100%" cellpadding="4" border="0">
+<tr valign=top>
+
+<td width=32%>
+    <b>Version 5.4 (previous stable)</b>
+    <ul>
+	<li><a href="https://sourceforge.net/projects/gnuplot/files/gnuplot/5.4.10/">
+	    Release 5.4.10 (Oct 2023)</li>
+	<li><a href="ReleaseNotes_5_4_10.html">Release Notes</a></li>
+	<li><a href="docs_5.4/Gnuplot_5_4.pdf">User Manual</a> (PDF)
+	    <a href="docs_5.4/gnuplot-ja.pdf"> 日本語</a>(PDF) </li>
+	<li><a href="http://gnuplot.sourceforge.net/demo_5.4">Demo gallery</a> </li>
+	<li><a href="download.html#OSX">contributed binaries for macOS</a></li>
+    </ul>
+</td>
+
+<td width=32% style="background-color:#eeeeee">
+    <b>Gnuplot 6.0 (current stable)</b><br>
+    <ul>
+	<li><a href="https://sourceforge.net/projects/gnuplot/files/gnuplot/6.0.1/">
+		Release 6.0.1 (May 2024)</li>
+	<li><a href="ReleaseNotes_6_0_1.html">Release Notes</a></li>
+	<li> <a href="docs_6.0/Gnuplot_6.pdf">User Manual</a> (PDF)
+	     <a href="docs_6.0/gnuplot-ja.pdf"> 日本語</a>(PDF) </li>
+	<li> <a href="http://gnuplot.sourceforge.net/demo_6.0">Demo gallery</a></li>
+	<li> <a href="http://gnuplot.info/docs_6.0/gnuplot6.html"> On-line documentation (HTML) </a> </li>
+    </ul>
+</td>
+
+<td width=32%>
+    <b>Development version 6.1</b><br>
+    <ul>
+	<li>
+	New features are added regularly.
+	Git repository <a href="https://sourceforge.net/p/gnuplot/gnuplot-main/">here</a>.
+	</li>
+	<li> <a href="docs_6.1/Gnuplot_6.pdf">User Manual</a> (PDF)
+	     <a href="docs_6.1/gnuplot-ja.pdf"> 日本語</a>(PDF) </li>
+	<li> <a href="http://gnuplot.sourceforge.net/demo_6.1">Demo gallery</a></li>
+	<li> <a href="http://gnuplot.info/docs_6.1/gnuplot6.html"> On-line documentation (HTML) </a> </li>
+    </ul>
+</td>
+
+</tr>
+</table>
+
+<hr>
+<p/>
+
+<table width="100%" cellpadding="0" border="0">
+<tr>
+    <td valign="top" width="30%">
+	<b>Release History</b>
+	<table width="100%" cellpadding="0" border="0">
+	<tr> <td colspan=2> <ul>
+	    <li>gnuplot 6.0 Dec 2023 &nbsp; 
+	        (<a href="ReleaseNotes_6_0_1.html"> 6.0.1 </a> May 2024)
+		</li>
+	    <li>gnuplot 5.4 Jul 2020 &nbsp; &nbsp;
+	        (<a href="ReleaseNotes_5_4_10.html"> 5.4.10 </a> Oct 2023)
+		</li>
+	    <li>gnuplot 5.2 Sep 2017 &nbsp;
+	        (<a href="ReleaseNotes_5_2_8.html"> 5.2.8 </a> Dec 2019)
+		</li>
+	    <li>gnuplot 5.0 Jan 2015</li>
+	</ul> </td> </tr>
+	<tr>
+	<td valign="top"> <ul>
+	    <font size="-1">
+	    <li>gnuplot 4.6  2012</li>
+	    <li>gnuplot 4.4  2010</li>
+	    <li>gnuplot 4.2  2007</li>
+	    <li>gnuplot 4.0  2004</li>
+	    </font>
+	</ul> </td>
+	<td valign="top"> <ul>
+	    <font size="-1">
+	    <li>gnuplot 3.7  1999</li>
+	    <li>gnuplot 3.5  1993</li>
+	    <li>gnuplot 2.0  1990</li>
+	    <li>gnuplot 1.0  1986</li>
+	    </font>
+	</ul></td>
+	</tr>
+	</table>
+	<b>Copyright/licensing</b>
+	<br>&nbsp; &nbsp; &nbsp; &nbsp;
+	    Gnuplot's <a href="https://sourceforge.net/p/gnuplot/gnuplot-main/ci/master/tree/Copyright">copyright</a>
+    </td>
+    <td width="1%">&nbsp;</td>
+    <td valign="top" width="30%">
+	  <table border='0'>
+	    <tr>
+	      <td valign="top">
+	      <a href="http://www.manning.com/janert2">
+	        <img src="figs/janert_cover_2e.jpg" alt="Gnuplot Book Cover" align="right" border='0' width='150'></a>
+	      </td>
+	      <td>&nbsp;</td>
+	      <td valign="top">
+		  <a href="http://www.manning.com/janert2"><font color=#000088><b>Gnuplot in Action</b><br> 
+                                                                             Second Edition</font></a><br>
+                  by Philipp K. Janert<br>
+		  &nbsp;<br>
+		  <font color=#000088><i>Updated for gnuplot 5</i></font><br>
+		<font size="-2">
+		  Manning Publications (2016)<br>
+		  ISBN: 1633430189<br>
+		  ISBN-13: 9781633430181<br>
+		</font>
+	      </td>
+	    </tr>
+	  </table>
+    </td>
+    <td valign="top" width="30%">
+	<table border='0'>
+	  <tr>
+	    <td valign="top">
+		<a alt = "" href = "https://alogus.com/publishing/gnuplot5/"><img alt = "" src
+="https://alogus.com/publishing/gnuplot5/gnuplot5cover.png" height="187" ></a>
+	    </td>
+	    <td>&nbsp;</td>
+	    <td valign="top">
+		  <a href = "https://alogus.com/publishing/gnuplot5/"><font color=#000088>
+		  <b>Gnuplot 5</b></font></a><br>
+		  by Lee Phillips<br>
+		  &nbsp;<br>
+		<font size="-2">
+		  Packt Publishing (2017)<br>
+		  ISBN : 978-0-692-92716-8<br>
+		</font>
+	    </td>
+	  </tr>
+	</table>
+    </td>
+</tr>
+</table>
+
+<hr>
+
+<div class="footer">
+<font size="-1">May 2024</font>
+</div>
+
+
+</body>
+</html>
