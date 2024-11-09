@@ -1,0 +1,23 @@
+<html>
+<head>
+<title>Lab</title>
+<meta charset="utf8">
+<script>
+
+let socket1 = new WebSocket("ws://127.0.0.1:9457");
+
+socket1.onmessage = function(event) {
+  //alert(`[message] Данные получены с сервера: ${event.data}`);
+  document.getElementById("s1").innerHTML = event.data;
+};
+
+socket1.onerror = function(error) {
+  document.getElementById("s1").innerHTML = "disconnected";
+};
+
+</script>
+</head>
+<body>
+<div id="s1">Limonov</div><br>
+</body>
+</html>
