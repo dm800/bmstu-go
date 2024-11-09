@@ -4,7 +4,7 @@
 <meta charset="utf8">
 <script>
 
-let socket1 = new WebSocket("ws://127.0.0.1:9457");
+let socket1 = new WebSocket("ws://127.0.0.1:9457/socket");
 
 socket1.onmessage = function(event) {
   //alert(`[message] Данные получены с сервера: ${event.data}`);

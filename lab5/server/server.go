@@ -81,9 +81,14 @@ func HomeRouterHandler(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+func RouterHandler(w http.ResponseWriter, r *http.Request) {
+	log.Println("went into HTTP handler")
+	http.ServeFile(w, r, "websocket_client.html")
+}
+
 func runsocket() {
-	http.HandleFunc("/", HomeRouterHandler) // установим роутер
-	log.Println("Starting listening ws at", "176.124.206.238:9457")
+	http.HandleFunc("/socket", HomeRouterHandler) // установим роутер
+	log.Println("Starting listening ws at", "127.0.0.1:9457")
 	err := http.ListenAndServe("127.0.0.1:9457", nil) // задаем слушать порт
 	if err != nil {
 		log.Fatal("ListenAndServe: ", err)
@@ -98,5 +103,7 @@ func main() {
 	db.SetMaxOpenConns(10)
 	db.SetMaxIdleConns(10)
 
+	http.HandleFunc("/", RouterHandler)
+	go http.ListenAndServe("176.124.206.238:9456", nil)
 	runsocket()
 }
