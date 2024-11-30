@@ -1,0 +1,28 @@
+<html>
+<head>
+<title>Lab</title>
+<meta charset="utf8">
+</head>
+<body>
+<input name="Login" id="Login" placeholder="User login">
+<input name="Pass" id="Pass" type="password" placeholder="User password">
+<button type="button" id="post-btn" onclick="fetching()">Send</button>
+<script>
+  async function fetching() {
+    let us = document.getElementsByName("Login")[0].value;
+    let pass = document.getElementsByName("Pass")[0].value;
+    let data = {
+      user: us,
+      password: pass
+    };
+    await fetch("http://127.0.0.1:9456/button", {
+        method: "POST",
+        body: JSON.stringify(data)
+    });
+    await new Promise(r => setTimeout(r, 1000));
+    window.location.href = "/panel";
+
+  }
+</script>
+</body>
+</html>

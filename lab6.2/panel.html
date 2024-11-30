@@ -1,0 +1,27 @@
+<html>
+<head>
+<title>Lab</title>
+<meta charset="utf8">
+<script>
+
+    let socket1 = new WebSocket("ws://127.0.0.1:9456/ws");
+
+    socket1.onmessage = function(event) {
+        //alert(`[message] Данные получены с сервера: ${event.data}`);
+        document.getElementById("Line").disabled = false;
+        document.getElementById("data").innerHTML = event.data
+    };
+
+
+    socket1.onerror = function(error) {
+        document.getElementById("Line").disabled = true;
+    };
+
+</script>
+</head>
+<body>
+<div id="s1">Console</div><br>
+<input name="Line" id="Line" placeholder="Enter command">
+<div id="data">Output</div>
+</body>
+</html>
