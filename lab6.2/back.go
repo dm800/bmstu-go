@@ -16,11 +16,12 @@ import (
 var c *websocket.Conn
 var conn *ftp.ServerConn
 
-func handle(text string) {
+func handle(text string, cur string) string {
+	fmt.Println("executing", text)
+	fmt.Println(conn == nil)
 	splitted := strings.Split(text, " ")
 	req := splitted[0]
 	path := "/"
-	cur := "/"
 	if req != "END" {
 		/*if req == "GET" {
 			log.Println("Doing get")
@@ -67,20 +68,24 @@ func handle(text string) {
 			log.Println("Done")
 		} else if req == "LS" {
 			entry, err := conn.List(cur)
+			st := ""
 			if err != nil {
 				log.Println(err)
 			}
 			for _, elem := range entry {
-				fmt.Println(elem.Name, elem.Type, elem.Time)
+				st += elem.Name + string(rune(elem.Type)) + elem.Time.String() + "<br>"
 			}
+			c.Write(context.Background(), websocket.MessageText, []byte(st))
+			return cur
 		} else if req == "CD" {
 			path = splitted[1]
 			err := conn.ChangeDir(cur + path)
-			cur = cur + path + "/"
 			if err != nil {
 				log.Println(err)
+				return cur
 			}
-			log.Println("Done")
+			cur = cur + path + "/"
+			log.Println("Done", cur)
 		} else if req == "RMD" {
 			path = splitted[1]
 			err := conn.RemoveDir(cur + path)
@@ -98,7 +103,9 @@ func handle(text string) {
 			}
 			log.Println("Done")
 		}
+		c.Write(context.Background(), websocket.MessageText, []byte("Done"))
 	}
+	return cur
 }
 
 func HomeRouterHandler(w http.ResponseWriter, r *http.Request) {
@@ -113,23 +120,36 @@ func HomeRouterHandler(w http.ResponseWriter, r *http.Request) {
 	_, text, _ := c.Read(context.Background())
 	splitted := strings.Split(string(text), " ")
 	log.Println(splitted[0], splitted[1])
-	login(splitted[0], splitted[1])
+	result := login(splitted[0], splitted[1])
+	c.Write(context.Background(), websocket.MessageText, []byte(fmt.Sprintf("%d", result)))
+	var cur string
+	cur = "/"
+	for {
+		_, text, _ = c.Read(context.Background())
+		if string(text) == "END" {
+			if err := conn.Quit(); err != nil {
+				log.Println(err)
+				return
+			}
+		}
+		fmt.Println("received", string(text))
+		cur = handle(string(text), cur)
+	}
 }
 
-func login(user string, pass string) {
-	conn, err := ftp.Dial("students.yss.su:21", ftp.DialWithTimeout(5*time.Second))
+func login(user string, pass string) int {
+	var err error
+	conn, err = ftp.Dial("students.yss.su:21", ftp.DialWithTimeout(5*time.Second))
 	if err != nil {
-		log.Fatal(err)
+		log.Println(err)
+		return 1
 	}
-
 	err = conn.Login(user, pass)
 	if err != nil {
-		log.Fatal(err)
+		log.Println(err)
+		return 1
 	}
-	handle("LS")
-	if err := conn.Quit(); err != nil {
-		log.Fatal(err)
-	}
+	return 0
 }
 
 func main() {

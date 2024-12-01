@@ -15,12 +15,17 @@
       user: us,
       password: pass
     };
-    await fetch("http://127.0.0.1:9456/button", {
+    let resp = await fetch("http://127.0.0.1:9456/button", {
         method: "POST",
         body: JSON.stringify(data)
-    });
-    await new Promise(r => setTimeout(r, 1000));
-    window.location.href = "/panel";
+    })
+    let result = await resp.json();
+    if (result.message === "Success") {
+      window.location.href = "/panel";
+    } else {
+      alert("Wrong login or password");
+    }
+    //await new Promise(r => setTimeout(r, 1000));
 
   }
 </script>

@@ -7,9 +7,11 @@ import (
 	"io"
 	"log"
 	"net/http"
+	"time"
 )
 
 var ws *websocket.Conn
+var con *websocket.Conn
 
 type Request struct {
 	User string `json:"user"`
@@ -38,17 +40,56 @@ func button(w http.ResponseWriter, r *http.Request) {
 		cred := ans.User + " " + ans.Pass
 		ws, _, _ = websocket.Dial(context.Background(), "ws://127.0.0.1:9457/ws", nil)
 		ws.Write(context.Background(), websocket.MessageText, []byte(cred))
+		time.Sleep(200 * time.Millisecond)
+		_, code, _ := ws.Read(context.Background())
+		if string(code) == "1" {
+			log.Println("Failed")
+			w.WriteHeader(http.StatusUnauthorized)
+			w.Header().Set("Content-Type", "application/json")
+			w.Write([]byte(`{"message": "Unauthorized"}`))
+		} else {
+			log.Println("Success")
+			w.WriteHeader(http.StatusOK)
+			w.Header().Set("Content-Type", "application/json")
+			w.Write([]byte(`{"message": "Success"}`))
+		}
 	} else {
 		return
 	}
 }
 
 func panel(w http.ResponseWriter, r *http.Request) {
+	log.Println("Panel")
 	http.ServeFile(w, r, "panel.html")
 }
 
+func update() {
+	for {
+		_, text, _ := con.Read(context.Background())
+		command := string(text)
+		log.Println("send to socket", command)
+		ws.Write(context.Background(), websocket.MessageText, []byte(command))
+		time.Sleep(200 * time.Millisecond)
+		_, text, _ = ws.Read(context.Background())
+		log.Println("received from socket", string(text))
+		if string(text) == "Done" {
+			log.Println("Done")
+			continue
+		}
+		con.Write(context.Background(), websocket.MessageText, text)
+	}
+}
+
 func web(w http.ResponseWriter, r *http.Request) {
-	log.Println("Win")
+	log.Println("Websocket")
+	var err error
+	con, err = websocket.Accept(w, r, &websocket.AcceptOptions{
+		InsecureSkipVerify: true,
+	})
+	if err != nil {
+		log.Println(err)
+	}
+	go update()
 }
 
 func bhelp() {

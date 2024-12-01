@@ -22,6 +22,16 @@
 <body>
 <div id="s1">Console</div><br>
 <input name="Line" id="Line" placeholder="Enter command">
+<button type="button" id="post-btn" onclick="send()">Send</button>
 <div id="data">Output</div>
+<script>
+    async function send() {
+        let command = document.getElementsByName("Line")[0].value;
+        let data = {
+            command: command
+        };
+        socket1.send(command);
+    }
+</script>
 </body>
 </html>
