@@ -1,0 +1,37 @@
+<html>
+<head>
+<title>Exam</title>
+<meta charset="utf8">
+<script>
+
+let socket1 = new WebSocket("ws://127.0.0.1:9457/socket");
+
+socket1.onmessage = function(event) {
+  //alert(`[message] Данные получены с сервера: ${event.data}`);
+  document.getElementById("ans").innerHTML = event.data;
+};
+
+socket1.onerror = function(error) {
+  document.getElementById("ans").innerHTML = "disconnected";
+};
+
+</script>
+</head>
+<body>
+<input name="a" id="a" placeholder="1st num">
+<input name="b" id="b" placeholder="2nd num">
+<div id="ans">Введите данные</div>
+<button type="button" id="post-btn" onclick="send()">Calculate</button>
+<script>
+    async function send() {
+        let a = document.getElementsByName("a")[0].value;
+        let b = document.getElementsByName("b")[0].value;
+        let data = {
+            a: a,
+            b: b
+        };
+        socket1.send(JSON.stringify(data))
+    }
+</script>
+</body>
+</html>
